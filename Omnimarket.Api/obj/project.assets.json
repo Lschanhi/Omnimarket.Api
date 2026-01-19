@@ -33,6 +33,16 @@
             "related": ".pdb;.xml"
           }
         }
+      },
+      "OmniMarket.Shared/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/OmniMarket.Shared.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/OmniMarket.Shared.dll": {}
+        }
       }
     }
   },
@@ -67,11 +77,17 @@
         "microsoft.openapi.1.6.17.nupkg.sha512",
         "microsoft.openapi.nuspec"
       ]
+    },
+    "OmniMarket.Shared/1.0.0": {
+      "type": "project",
+      "path": "../Omnimarket.Shared/OmniMarket.Shared.csproj",
+      "msbuildProject": "../Omnimarket.Shared/OmniMarket.Shared.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net9.0": [
-      "Microsoft.AspNetCore.OpenApi >= 9.0.9"
+      "Microsoft.AspNetCore.OpenApi >= 9.0.9",
+      "OmniMarket.Shared >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -81,11 +97,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\OmniMarket.API\\OmniMarket.API.csproj",
+      "projectUniqueName": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\Omnimarket.Api\\OmniMarket.API.csproj",
       "projectName": "OmniMarket.API",
-      "projectPath": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\OmniMarket.API\\OmniMarket.API.csproj",
+      "projectPath": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\Omnimarket.Api\\OmniMarket.API.csproj",
       "packagesPath": "C:\\Users\\lscha\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\OmniMarket.API\\obj\\",
+      "outputPath": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\Omnimarket.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -106,7 +122,11 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\Omnimarket.Shared\\OmniMarket.Shared.csproj": {
+              "projectPath": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\Omnimarket.Shared\\OmniMarket.Shared.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
