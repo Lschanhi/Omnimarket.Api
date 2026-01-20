@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+QPkXxiLyPQ=",
+  "dgSpecHash": "YiWz774soes=",
   "success": true,
-  "projectFilePath": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\OmniMarket.Mobile\\OmniMarket.Mobile.csproj",
+  "projectFilePath": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\Omnimarket.Mobile\\OmniMarket.Mobile.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lscha\\.nuget\\packages\\googlegson\\2.13.0.1\\googlegson.2.13.0.1.nupkg.sha512",
     "C:\\Users\\lscha\\.nuget\\packages\\microsoft.extensions.configuration\\9.0.5\\microsoft.extensions.configuration.9.0.5.nupkg.sha512",
