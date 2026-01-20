@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "yKRpZQa5E/g=",
+  "dgSpecHash": "LpBeIxn6oYw=",
   "success": true,
-  "projectFilePath": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\OmniMarket.API\\OmniMarket.API.csproj",
+  "projectFilePath": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\Omnimarket.Api\\OmniMarket.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lscha\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.9\\microsoft.aspnetcore.openapi.9.0.9.nupkg.sha512",
     "C:\\Users\\lscha\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
