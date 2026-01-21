@@ -1,4 +1,17 @@
+
+using Omnimarket.Api.Services;
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient<ICpfService, CpfService>(client =>
+{
+    // Configure aqui a URL base da API que você escolheu
+    // client.BaseAddress = new Uri("https://brasilapi.com.br/api/"); // Exemplo
+    client.BaseAddress = new Uri("incluir a url do api de consultar CPF"); // Exemplo
+    
+    // Se precisar de Token (Authorization)
+    // client.DefaultRequestHeaders.Add("Authorization", "Bearer SEU_TOKEN_AQUI");
+});
+
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
