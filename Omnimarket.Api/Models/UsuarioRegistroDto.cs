@@ -38,4 +38,57 @@ namespace Omnimarket.Api.Models
         [Compare("Password", ErrorMessage = "As senhas não coincidem")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }
+
+    public class UsuarioRegistroComContatoDto : UsuarioRegistroDto
+    {
+        [Required(ErrorMessage = "Informe pelo menos 1 telefone.")]
+        [MinLength(1, ErrorMessage = "Informe pelo menos 1 telefone.")]
+        public List<UsuarioTelefoneDto> Telefones { get; set; } = new();
+
+        public List<UsuarioEnderecoDto>? Enderecos { get; set; }
+    }
+
+    public class UsuarioTelefoneDto
+    {
+        [Required(ErrorMessage = "DDD é obrigatório.")]
+        [StringLength(2, MinimumLength = 2, ErrorMessage = "DDD deve ter 2 dígitos.")]
+        public string Ddd { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Número é obrigatório.")]
+        [StringLength(9, MinimumLength = 8, ErrorMessage = "Número deve ter 8 (fixo) ou 9 dígitos (celular).")]
+        public string Numero { get; set; } = string.Empty;
+
+        [StringLength(30)]
+        public string? Tipo { get; set; }
+
+        public bool? IsPrincipal { get; set; }
+    }
+
+    public class UsuarioEnderecoDto
+    {
+        [Required(ErrorMessage = "Tipo de logradouro é obrigatório.")]
+        [StringLength(10)]
+        public string TipoLogradouro { get; set; } = string.Empty; // "AV", "R", ...
+
+        [Required(ErrorMessage = "Nome do logradouro é obrigatório.")]
+        [StringLength(200)]
+        public string NomeLogradouro { get; set; } = string.Empty; // "Paulista"
+
+        [Required, StringLength(20)]
+        public string Numero { get; set; } = string.Empty;
+
+        [StringLength(80)]
+        public string? Complemento { get; set; }
+
+        [Required, StringLength(10)]
+        public string Cep { get; set; } = string.Empty;
+
+        [Required, StringLength(120)]
+        public string Cidade { get; set; } = string.Empty;
+
+        [Required, StringLength(2)]
+        public string Uf { get; set; } = string.Empty;
+
+        public bool? IsPrincipal { get; set; }
+    }
 }

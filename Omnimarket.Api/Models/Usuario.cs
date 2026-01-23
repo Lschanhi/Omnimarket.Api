@@ -9,7 +9,7 @@ namespace Omnimarket.Api.Models
     public class Usuario
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         
         [Required]
         [StringLength(11)]
@@ -43,5 +43,9 @@ namespace Omnimarket.Api.Models
 
         [NotMapped]
         public string Token { get; set; } = string.Empty;
+
+
+        public List<Telefone> Telefones { get; set; } = new();
+        public List<Endereco> Enderecos { get; set; } = new();
     }
 }
