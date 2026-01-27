@@ -9,7 +9,7 @@ namespace Omnimarket.Api.Models
     public class Usuario
     {
         [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public int Id { get; set; }
         
         [Required]
         [StringLength(11)]
@@ -31,10 +31,6 @@ namespace Omnimarket.Api.Models
 
         [NotMapped]
         public string PasswordString { get; set; } = string.Empty;
-        
-        [Required]
-        [StringLength(50)]
-        public string NomeUsuario { get; set; } = string.Empty;
         
         [Required]
         [EmailAddress]

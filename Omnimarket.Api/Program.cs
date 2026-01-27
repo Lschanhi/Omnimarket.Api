@@ -1,7 +1,17 @@
-
+using System.Text.Json.Serialization;
+using Omnimarket.Api.Data;
+using System.Text;
 using Omnimarket.Api.Services;
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.EntityFrameworkCore;
 
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseSqlServer(builder
+        .Configuration.GetConnectionString("ConexaoLocal"));
+});
+/*
 builder.Services.AddHttpClient<ICpfService, CpfService>(client =>
 {
     // Configure aqui a URL base da API que você escolheu
@@ -11,6 +21,12 @@ builder.Services.AddHttpClient<ICpfService, CpfService>(client =>
     // Se precisar de Token (Authorization)
     // client.DefaultRequestHeaders.Add("Authorization", "Bearer SEU_TOKEN_AQUI");
 });
+*/
+builder.Services.AddControllers()
+    .AddJsonOptions(opt =>
+    {
+        opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 
 // Add services to the container.
@@ -46,7 +62,9 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast");
 
+app.MapControllers();
 app.Run();
+
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {

@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Omnimarket.Api.Data;
 using Omnimarket.Api.Models;
+using Omnimarket.Api.Models.Dtos.Telefones;
+using Omnimarket.Api.Utils;
 
 namespace Omnimarket.Api.Controllers
 {
     [ApiController]
-    [Route("api/usuarios/{usuarioId:guid}/telefones")]
+    [Route("api/usuarios/{usuarioId:int}/telefones")]
     public class TelefonesController : ControllerBase
     {
         private readonly DataContext _context;
@@ -17,95 +19,77 @@ namespace Omnimarket.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Listar(Guid usuarioId)
+        public async Task<IActionResult> Listar(int usuarioId)
         {
             var telefones = await _context.TBL_TELEFONE
                 .Where(t => t.UsuarioId == usuarioId)
-                .Select(t => new
-                {
-                    t.Id,
-                    t.Ddd,
-                    t.Numero,
-                    t.Tipo,
-                    t.IsPrincipal,
-                    t.E164
-                })
+                .Select(t => new { t.Id, numeroE164 = t.NumeroE164, t.IsPrincipal })
+
                 .ToListAsync();
 
             return Ok(telefones);
         }
 
-        [HttpGet("{telefoneId:guid}")]
-        public async Task<IActionResult> Obter(Guid usuarioId, Guid telefoneId)
+        [HttpGet("{telefoneId:int}")]
+        public async Task<IActionResult> Obter(int usuarioId, int telefoneId)
         {
             var telefone = await _context.TBL_TELEFONE
                 .Where(t => t.UsuarioId == usuarioId && t.Id == telefoneId)
-                .Select(t => new
-                {
-                    t.Id,
-                    t.Ddd,
-                    t.Numero,
-                    t.Tipo,
-                    t.IsPrincipal,
-                    t.E164
-                })
+                .Select(t => new { t.Id, numeroE164 = t.NumeroE164, t.IsPrincipal })
+
                 .FirstOrDefaultAsync();
 
             return telefone is null ? NotFound() : Ok(telefone);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Criar(Guid usuarioId, [FromBody] UsuarioTelefoneDto dto)
+        public async Task<IActionResult> Criar(int usuarioId, [FromBody] UsuarioTelefoneDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var usuarioExiste = await _context.TBL_USUARIO.AnyAsync(u => u.Id == usuarioId);
             if (!usuarioExiste) return NotFound(new { mensagem = "Usuário não encontrado." });
 
+            var r = ValidadorTelefone.ValidarCelularBr(dto.Ddd, dto.Numero);
+            if (!r.Valido) return BadRequest(new { mensagem = "Telefone inválido (apenas celular BR)." });
+
             var telefone = new Telefone
             {
-                Id = Guid.NewGuid(),
+            
                 UsuarioId = usuarioId,
-                Ddd = dto.Ddd.Trim(),
-                Numero = dto.Numero.Trim(),
-                Tipo = string.IsNullOrWhiteSpace(dto.Tipo) ? "Celular" : dto.Tipo.Trim(),
+                NumeroE164 = r.E164!,                 // AQUI salva em E164
                 IsPrincipal = dto.IsPrincipal ?? false
-                
             };
-
             await _context.TBL_TELEFONE.AddAsync(telefone);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Obter), new { usuarioId, telefoneId = telefone.Id }, new { 
-            telefone.Id,
-            telefone.Ddd,
-            telefone.Numero,
-            telefone.Tipo,
-            telefone.IsPrincipal,
-            e164 = telefone.E164 });
+            return CreatedAtAction(nameof(Obter),
+            new { usuarioId, telefoneId = telefone.Id },
+            new { telefone.Id, telefone.NumeroE164, telefone.IsPrincipal });
         }
 
-        [HttpPut("{telefoneId:guid}")]
-        public async Task<IActionResult> Atualizar(Guid usuarioId, Guid telefoneId, [FromBody] UsuarioTelefoneDto dto)
+        [HttpPut("{telefoneId:int}")]
+        public async Task<IActionResult> Atualizar(int usuarioId, int telefoneId, [FromBody] UsuarioTelefoneDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var telefone = await _context.TBL_TELEFONE
                 .FirstOrDefaultAsync(t => t.UsuarioId == usuarioId && t.Id == telefoneId);
 
-            if (telefone is null) return NotFound();
+           if (telefone is null) return NotFound();
 
-            telefone.Ddd = dto.Ddd.Trim();
-            telefone.Numero = dto.Numero.Trim();
-            telefone.Tipo = string.IsNullOrWhiteSpace(dto.Tipo) ? telefone.Tipo : dto.Tipo.Trim();
+            var r = ValidadorTelefone.ValidarCelularBr(dto.Ddd, dto.Numero);
+            if (!r.Valido) return BadRequest(new { mensagem = "Telefone inválido (apenas celular BR)." });
+
+            telefone.NumeroE164 = r.E164!;           // AQUI atualiza em E164
             telefone.IsPrincipal = dto.IsPrincipal ?? telefone.IsPrincipal;
 
-            await _context.SaveChangesAsync();
-            return NoContent();
+                    await _context.SaveChangesAsync();
+                    return NoContent();
         }
 
-        [HttpDelete("{telefoneId:guid}")]
-        public async Task<IActionResult> Remover(Guid usuarioId, Guid telefoneId)
+        [HttpDelete("{telefoneId:int}")]
+        public async Task<IActionResult> Remover(int usuarioId, int telefoneId)
         {
             var telefone = await _context.TBL_TELEFONE
                 .FirstOrDefaultAsync(t => t.UsuarioId == usuarioId && t.Id == telefoneId);
@@ -124,8 +108,8 @@ namespace Omnimarket.Api.Controllers
         }
 
         // Opcional: marcar como principal (facilita pro front)
-        [HttpPatch("{telefoneId:guid}/principal")]
-        public async Task<IActionResult> DefinirPrincipal(Guid usuarioId, Guid telefoneId)
+        [HttpPatch("{telefoneId:int}/principal")]
+        public async Task<IActionResult> DefinirPrincipal(int usuarioId, int telefoneId)
         {
             var telefone = await _context.TBL_TELEFONE
                 .FirstOrDefaultAsync(t => t.UsuarioId == usuarioId && t.Id == telefoneId);

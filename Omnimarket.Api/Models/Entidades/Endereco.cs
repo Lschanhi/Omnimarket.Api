@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema; 
+using System.ComponentModel.DataAnnotations.Schema;
+using Omnimarket.Api.Models.Enum;
 
 namespace Omnimarket.Api.Models
 {
     public class Endereco
     {
         [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public int Id { get; set; }
 
         [Required]
-        public Guid UsuarioId { get; set; }
+        public int UsuarioId { get; set; }
 
         public Usuario Usuario { get; set; } = null!;
 
         [Required, StringLength(200)]
-        public string TipoLogradouro { get; set; } = string.Empty; // ex: "AV", "R", "AL"
-        public string NomeLogradouro { get; set; } = string.Empty; // ex: "Paulista"
+        public TiposLogradouroBR TipoLogradouro { get; set; }// ex: "AV", "R", "AL"
+        public string NomeEndereco { get; set; } = string.Empty; // ex: "Paulista"
 
         [Required, StringLength(20)]
         public string Numero { get; set; } = string.Empty;
