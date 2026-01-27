@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using Omnimarket.Api.Models.Dtos.Enderecos;
+using Omnimarket.Api.Models.Dtos.Telefones;
 
 
-namespace Omnimarket.Api.Models
+namespace Omnimarket.Api.Models.Dtos.Usuarios
 {
     public class UsuarioRegistroDto
     {
@@ -20,10 +22,6 @@ namespace Omnimarket.Api.Models
         [Required(ErrorMessage = "Sobrenome é obrigatório")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Sobrenome deve ter entre 2 e 100 caracteres")]
         public string Sobrenome { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Nome de usuário é obrigatório")]
-        [StringLength(50, MinimumLength = 3, ErrorMessage = "Nome de usuário deve ter entre 3 e 50 caracteres")]
-        public string NomeUsuario { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email é obrigatório")]
         [EmailAddress(ErrorMessage = "Email inválido")]
@@ -48,47 +46,5 @@ namespace Omnimarket.Api.Models
         public List<UsuarioEnderecoDto>? Enderecos { get; set; }
     }
 
-    public class UsuarioTelefoneDto
-    {
-        [Required(ErrorMessage = "DDD é obrigatório.")]
-        [StringLength(2, MinimumLength = 2, ErrorMessage = "DDD deve ter 2 dígitos.")]
-        public string Ddd { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Número é obrigatório.")]
-        [StringLength(9, MinimumLength = 8, ErrorMessage = "Número deve ter 8 (fixo) ou 9 dígitos (celular).")]
-        public string Numero { get; set; } = string.Empty;
-
-        [StringLength(30)]
-        public string? Tipo { get; set; }
-
-        public bool? IsPrincipal { get; set; }
-    }
-
-    public class UsuarioEnderecoDto
-    {
-        [Required(ErrorMessage = "Tipo de logradouro é obrigatório.")]
-        [StringLength(10)]
-        public string TipoLogradouro { get; set; } = string.Empty; // "AV", "R", ...
-
-        [Required(ErrorMessage = "Nome do logradouro é obrigatório.")]
-        [StringLength(200)]
-        public string NomeLogradouro { get; set; } = string.Empty; // "Paulista"
-
-        [Required, StringLength(20)]
-        public string Numero { get; set; } = string.Empty;
-
-        [StringLength(80)]
-        public string? Complemento { get; set; }
-
-        [Required, StringLength(10)]
-        public string Cep { get; set; } = string.Empty;
-
-        [Required, StringLength(120)]
-        public string Cidade { get; set; } = string.Empty;
-
-        [Required, StringLength(2)]
-        public string Uf { get; set; } = string.Empty;
-
-        public bool? IsPrincipal { get; set; }
-    }
+   
 }

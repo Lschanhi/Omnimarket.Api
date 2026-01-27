@@ -37,7 +37,11 @@ namespace Omnimarket.Api.Data
             // Índices úteis (opcional)
             modelBuilder.Entity<Usuario>().HasIndex(x => x.Cpf).IsUnique();
             modelBuilder.Entity<Usuario>().HasIndex(x => x.Email).IsUnique();
-            modelBuilder.Entity<Usuario>().HasIndex(x => x.NomeUsuario).IsUnique();
+
+            modelBuilder.Entity<Endereco>()
+                .Property(e => e.TipoLogradouro)
+                .HasConversion<string>();
+
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

@@ -3,11 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Omnimarket.Api.Data;
 using Omnimarket.Api.Models;
 using Omnimarket.Api.Models.Enum;
+using Omnimarket.Api.Utils;
+using Omnimarket.Api.Models.Dtos.Enderecos;
 
 namespace Omnimarket.Api.Controllers
 {
     [ApiController]
-    [Route("api/usuarios/{usuarioId:guid}/enderecos")]
+    [Route("api/usuarios/{usuarioId:int}/enderecos")]
     public class EnderecosController : ControllerBase
     {
         private readonly DataContext _context;
@@ -18,7 +20,7 @@ namespace Omnimarket.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Listar(Guid usuarioId)
+        public async Task<IActionResult> Listar(int usuarioId)
         {
             var enderecos = await _context.TBL_ENDERECO
                 .Where(e => e.UsuarioId == usuarioId)
@@ -26,7 +28,7 @@ namespace Omnimarket.Api.Controllers
                 {
                     e.Id,
                     e.TipoLogradouro,
-                    e.NomeLogradouro,
+                    e.NomeEndereco,
                     e.Numero,
                     e.Complemento,
                     e.Cep,
@@ -39,8 +41,8 @@ namespace Omnimarket.Api.Controllers
             return Ok(enderecos);
         }
 
-        [HttpGet("{enderecoId:guid}")]
-        public async Task<IActionResult> Obter(Guid usuarioId, Guid enderecoId)
+        [HttpGet("{enderecoId:int}")]
+        public async Task<IActionResult> Obter(int usuarioId, int enderecoId)
         {
             var endereco = await _context.TBL_ENDERECO
                 .Where(e => e.UsuarioId == usuarioId && e.Id == enderecoId)
@@ -48,7 +50,7 @@ namespace Omnimarket.Api.Controllers
                 {
                     e.Id,
                     e.TipoLogradouro,
-                    e.NomeLogradouro,
+                    e.NomeEndereco,
                     e.Numero,
                     e.Complemento,
                     e.Cep,
@@ -62,7 +64,7 @@ namespace Omnimarket.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Criar(Guid usuarioId, [FromBody] UsuarioEnderecoDto dto)
+        public async Task<IActionResult> Criar(int usuarioId, [FromBody] UsuarioEnderecoDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -71,13 +73,12 @@ namespace Omnimarket.Api.Controllers
 
             var endereco = new Endereco
             {
-                Id = Guid.NewGuid(),
                 UsuarioId = usuarioId,
-                TipoLogradouro = dto.TipoLogradouro.Trim(),
-                NomeLogradouro = dto.NomeLogradouro.Trim(),
+                Cep = dto.Cep.Trim(),
+                TipoLogradouro = dto.TipoLogradouro,
+                NomeEndereco = dto.NomeEndereco.Trim(),
                 Numero = dto.Numero.Trim(),
                 Complemento = dto.Complemento?.Trim(),
-                Cep = dto.Cep.Trim(),
                 Cidade = dto.Cidade.Trim(),
                 Uf = dto.Uf.Trim(),
                 IsPrincipal = dto.IsPrincipal ?? false
@@ -89,8 +90,8 @@ namespace Omnimarket.Api.Controllers
             return CreatedAtAction(nameof(Obter), new { usuarioId, enderecoId = endereco.Id }, new { endereco.Id });
         }
 
-        [HttpPut("{enderecoId:guid}")]
-        public async Task<IActionResult> Atualizar(Guid usuarioId, Guid enderecoId, [FromBody] UsuarioEnderecoDto dto)
+        [HttpPut("{enderecoId:int}")]
+        public async Task<IActionResult> Atualizar(int usuarioId, int enderecoId, [FromBody] UsuarioEnderecoDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -99,11 +100,11 @@ namespace Omnimarket.Api.Controllers
 
             if (endereco is null) return NotFound();
 
-            endereco.TipoLogradouro = dto.TipoLogradouro.Trim();
-            endereco.NomeLogradouro = dto.NomeLogradouro.Trim();
+            endereco.Cep = dto.Cep.Trim();
+            endereco.TipoLogradouro = dto.TipoLogradouro;
+            endereco.NomeEndereco = dto.NomeEndereco.Trim();
             endereco.Numero = dto.Numero.Trim();
             endereco.Complemento = dto.Complemento?.Trim();
-            endereco.Cep = dto.Cep.Trim();
             endereco.Cidade = dto.Cidade.Trim();
             endereco.Uf = dto.Uf.Trim();
             endereco.IsPrincipal = dto.IsPrincipal ?? endereco.IsPrincipal;
@@ -112,8 +113,8 @@ namespace Omnimarket.Api.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{enderecoId:guid}")]
-        public async Task<IActionResult> Remover(Guid usuarioId, Guid enderecoId)
+        [HttpDelete("{enderecoId:int}")]
+        public async Task<IActionResult> Remover(int usuarioId, int enderecoId)
         {
             var endereco = await _context.TBL_ENDERECO
                 .FirstOrDefaultAsync(e => e.UsuarioId == usuarioId && e.Id == enderecoId);
@@ -129,11 +130,15 @@ namespace Omnimarket.Api.Controllers
         [HttpGet("tipos-logradouro")]
         public IActionResult GetTiposLogradouro()
         {
-            var itens = TiposLogradouroBR.Itens
-                .Select(x => new { codigo = x.Codigo, descricao = x.Descricao })
-                .ToList();
+             var itens = Enum.GetValues<TiposLogradouroBR>()
+            .Select(v => new
+            {
+                codigo = v.ToString(),
+                descricao = v.GetDisplayName()
+            })
+            .ToList();
 
-            return Ok(itens);
+        return Ok(itens);
         }
     }
 }
