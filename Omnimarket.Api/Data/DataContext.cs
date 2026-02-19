@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Omnimarket.Api.Models;
+using Omnimarket.Api.Models.Entidades;
 
 namespace Omnimarket.Api.Data
 {
@@ -16,6 +16,7 @@ namespace Omnimarket.Api.Data
         public DbSet<Usuario> TBL_USUARIO { get; set; }
         public DbSet<Endereco> TBL_ENDERECO { get; set; }
         public DbSet<Telefone> TBL_TELEFONE { get; set; }
+        public DbSet<Produto> TBL_PRODUTO { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
