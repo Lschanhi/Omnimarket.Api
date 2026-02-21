@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Omnimarket.Api.Models;
 using Omnimarket.Api.Models.Entidades;
 
 namespace Omnimarket.Api.Data
@@ -17,12 +18,16 @@ namespace Omnimarket.Api.Data
         public DbSet<Endereco> TBL_ENDERECO { get; set; }
         public DbSet<Telefone> TBL_TELEFONE { get; set; }
         public DbSet<Produto> TBL_PRODUTO { get; set; }
+        public DbSet<ProdutoMidia> ProdutoMidia => Set<ProdutoMidia>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Usuario>().ToTable("TBL_USUARIO");
             modelBuilder.Entity<Endereco>().ToTable("TBL_ENDERECO");
             modelBuilder.Entity<Telefone>().ToTable("TBL_TELEFONE");
+            modelBuilder.Entity<Produto>().ToTable("TBL_PRODUTOS");
+            modelBuilder.Entity<ProdutoMidia>().ToTable("TBL_PRODUTOS_MIDIA");
+
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.Telefones)
                 .WithOne(t => t.Usuario)
@@ -42,6 +47,14 @@ namespace Omnimarket.Api.Data
             modelBuilder.Entity<Endereco>()
                 .Property(e => e.TipoLogradouro)
                 .HasConversion<string>();
+
+                modelBuilder.Entity<Produto>()
+                .HasMany(p => p.Midias)
+                .WithOne(m => m.Produto)
+                .HasForeignKey(m => m.ProdutoId)
+                .OnDelete(DeleteBehavior.Cascade); // se deletar produto, apaga mídias
+
+            base.OnModelCreating(modelBuilder);
 
         }
 

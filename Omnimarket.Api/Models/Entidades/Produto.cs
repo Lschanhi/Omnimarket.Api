@@ -8,25 +8,27 @@ namespace Omnimarket.Api.Models.Entidades
 {
     public class Produto
     {
-        public int Id { get; set; }
+       public int Id { get; set; }
 
-        [Required]
-        [StringLength(50)]
+        [Required, StringLength(50)]
         public string Nome { get; set; } = string.Empty;
 
-        [Required]
         public decimal Preco { get; set; }
-        public bool Disponivel { get; set; }
+
+        public bool Disponivel { get; set; } = true;
 
         [StringLength(100)]
-        public string Descricao { get; set; }
-        public byte[]? Foto { get; set; }
+        public string? Descricao { get; set; }
+
         public int QtdProdutos { get; set; }
-        
-        //[Required]
-        public double MediaAvaliacao { get; set; }  //Media de avaliações que um produto tem (0,2; 4,8, 5)
-        public int Avaliacao { get; set; }  //avaliação individual que o cliente pode dar (0 - 5)
-        public DateTime DtCriacao { get; set; } = DateTime.UtcNow; //Quando o vendedor criou o produto no sistema(DateTime.UtcNow serve para não ter problema com fuso horário)
-        public string Comentarios { get; set; }
+
+        public double MediaAvaliacao { get; set; }  // depois vale migrar p/ cálculo via entidade Avaliacao
+        public int Avaliacao { get; set; }          // idem
+
+        public DateTimeOffset DtCriacao { get; set; } = DateTimeOffset.UtcNow;
+
+        public string? Comentarios { get; set; }
+
+        public ICollection<ProdutoMidia> Midias { get; set; } = new List<ProdutoMidia>();
     }
 }

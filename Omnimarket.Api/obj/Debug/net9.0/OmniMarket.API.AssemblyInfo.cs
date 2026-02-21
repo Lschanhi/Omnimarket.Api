@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OmniMarket.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b878660ac78a5776c1a8bb3eb8946261d9916e54")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f5d7e6d15e6a2449cc098526c19729b44db1b8e3")]
 [assembly: System.Reflection.AssemblyProductAttribute("OmniMarket.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OmniMarket.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
