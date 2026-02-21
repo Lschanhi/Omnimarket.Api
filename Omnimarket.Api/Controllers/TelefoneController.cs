@@ -12,19 +12,14 @@ namespace Omnimarket.Api.Controllers
     public class TelefonesController : ControllerBase
     {
         private readonly DataContext _context;
-
-        public TelefonesController(DataContext context)
-        {
-            _context = context;
-        }
+        public TelefonesController(DataContext context) => _context = context;
 
         [HttpGet]
         public async Task<IActionResult> Listar(int usuarioId)
         {
             var telefones = await _context.TBL_TELEFONE
                 .Where(t => t.UsuarioId == usuarioId)
-                .Select(t => new { t.Id, numeroE164 = t.NumeroE164, t.IsPrincipal })
-
+                .Select(t => new { t.Id, t.Ddd, numeroE164 = t.NumeroE164, t.IsPrincipal })
                 .ToListAsync();
 
             return Ok(telefones);
@@ -35,8 +30,7 @@ namespace Omnimarket.Api.Controllers
         {
             var telefone = await _context.TBL_TELEFONE
                 .Where(t => t.UsuarioId == usuarioId && t.Id == telefoneId)
-                .Select(t => new { t.Id, numeroE164 = t.NumeroE164, t.IsPrincipal })
-
+                .Select(t => new { t.Id, t.Ddd, numeroE164 = t.NumeroE164, t.IsPrincipal })
                 .FirstOrDefaultAsync();
 
             return telefone is null ? NotFound() : Ok(telefone);
@@ -47,25 +41,23 @@ namespace Omnimarket.Api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var usuarioExiste = await _context.TBL_USUARIO.AnyAsync(u => u.Id == usuarioId);
-            if (!usuarioExiste) return NotFound(new { mensagem = "Usuário não encontrado." });
+            var usuario = await _context.TBL_USUARIO
+                .Include(u => u.Telefones)
+                .FirstOrDefaultAsync(u => u.Id == usuarioId);
+
+            if (usuario is null) return NotFound(new { mensagem = "Usuário não encontrado." });
 
             var r = ValidadorTelefone.ValidarCelularBr(dto.Ddd, dto.Numero);
             if (!r.Valido) return BadRequest(new { mensagem = "Telefone inválido (apenas celular BR)." });
 
-            var telefone = new Telefone
-            {
-            
-                UsuarioId = usuarioId,
-                NumeroE164 = r.E164!,                 // AQUI salva em E164
-                IsPrincipal = dto.IsPrincipal ?? false
-            };
-            await _context.TBL_TELEFONE.AddAsync(telefone);
+            usuario.AdicionarTelefone(r.E164!, r.Ddd!.Value, dto.IsPrincipal == true);
+
             await _context.SaveChangesAsync();
 
+            var criado = usuario.Telefones.OrderByDescending(t => t.Id).First();
             return CreatedAtAction(nameof(Obter),
-            new { usuarioId, telefoneId = telefone.Id },
-            new { telefone.Id, telefone.NumeroE164, telefone.IsPrincipal });
+                new { usuarioId, telefoneId = criado.Id },
+                new { criado.Id, criado.Ddd, numeroE164 = criado.NumeroE164, criado.IsPrincipal });
         }
 
         [HttpPut("{telefoneId:int}")]
@@ -73,52 +65,59 @@ namespace Omnimarket.Api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var telefone = await _context.TBL_TELEFONE
-                .FirstOrDefaultAsync(t => t.UsuarioId == usuarioId && t.Id == telefoneId);
+            var usuario = await _context.TBL_USUARIO
+                .Include(u => u.Telefones)
+                .FirstOrDefaultAsync(u => u.Id == usuarioId);
 
-           if (telefone is null) return NotFound();
+            if (usuario is null) return NotFound();
 
             var r = ValidadorTelefone.ValidarCelularBr(dto.Ddd, dto.Numero);
             if (!r.Valido) return BadRequest(new { mensagem = "Telefone inválido (apenas celular BR)." });
 
-            telefone.NumeroE164 = r.E164!;           // AQUI atualiza em E164
-            telefone.IsPrincipal = dto.IsPrincipal ?? telefone.IsPrincipal;
+            try
+            {
+                usuario.AtualizarTelefone(telefoneId, r.E164!, r.Ddd!.Value, dto.IsPrincipal);
+            }
+            catch (KeyNotFoundException) { return NotFound(); }
 
-                    await _context.SaveChangesAsync();
-                    return NoContent();
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
 
         [HttpDelete("{telefoneId:int}")]
         public async Task<IActionResult> Remover(int usuarioId, int telefoneId)
         {
-            var telefone = await _context.TBL_TELEFONE
-                .FirstOrDefaultAsync(t => t.UsuarioId == usuarioId && t.Id == telefoneId);
+            var usuario = await _context.TBL_USUARIO
+                .Include(u => u.Telefones)
+                .FirstOrDefaultAsync(u => u.Id == usuarioId);
 
-            if (telefone is null) return NotFound();
+            if (usuario is null) return NotFound();
 
-            // Regra: não pode ficar com 0 telefones
-            var totalTelefones = await _context.TBL_TELEFONE.CountAsync(t => t.UsuarioId == usuarioId);
-            if (totalTelefones <= 1)
-                return BadRequest(new { mensagem = "Não é possível remover o último telefone do usuário." });
+            try
+            {
+                usuario.RemoverTelefone(telefoneId);
+            }
+            catch (KeyNotFoundException) { return NotFound(); }
+            catch (InvalidOperationException ex) { return BadRequest(new { mensagem = ex.Message }); }
 
-            _context.TBL_TELEFONE.Remove(telefone);
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
-        // Opcional: marcar como principal (facilita pro front)
         [HttpPatch("{telefoneId:int}/principal")]
         public async Task<IActionResult> DefinirPrincipal(int usuarioId, int telefoneId)
         {
-            var telefone = await _context.TBL_TELEFONE
-                .FirstOrDefaultAsync(t => t.UsuarioId == usuarioId && t.Id == telefoneId);
+            var usuario = await _context.TBL_USUARIO
+                .Include(u => u.Telefones)
+                .FirstOrDefaultAsync(u => u.Id == usuarioId);
 
-            if (telefone is null) return NotFound();
+            if (usuario is null) return NotFound();
 
-            // Desmarca todos e marca este
-            var telefones = await _context.TBL_TELEFONE.Where(t => t.UsuarioId == usuarioId).ToListAsync();
-            foreach (var t in telefones) t.IsPrincipal = (t.Id == telefoneId);
+            try
+            {
+                usuario.DefinirTelefonePrincipal(telefoneId);
+            }
+            catch (KeyNotFoundException) { return NotFound(); }
 
             await _context.SaveChangesAsync();
             return NoContent();

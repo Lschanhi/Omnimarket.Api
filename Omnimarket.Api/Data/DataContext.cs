@@ -7,12 +7,10 @@ using Omnimarket.Api.Models;
 
 namespace Omnimarket.Api.Data
 {
-    public class DataContext: DbContext
+    public class DataContext : DbContext
     {
-         public DataContext (DbContextOptions<DataContext> options) : base(options)
-        {
-            
-        }
+        public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+
         public DbSet<Usuario> TBL_USUARIO { get; set; }
         public DbSet<Endereco> TBL_ENDERECO { get; set; }
         public DbSet<Telefone> TBL_TELEFONE { get; set; }
@@ -22,6 +20,7 @@ namespace Omnimarket.Api.Data
             modelBuilder.Entity<Usuario>().ToTable("TBL_USUARIO");
             modelBuilder.Entity<Endereco>().ToTable("TBL_ENDERECO");
             modelBuilder.Entity<Telefone>().ToTable("TBL_TELEFONE");
+
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.Telefones)
                 .WithOne(t => t.Usuario)
@@ -34,20 +33,26 @@ namespace Omnimarket.Api.Data
                 .HasForeignKey(e => e.UsuarioId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Índices úteis (opcional)
+            // IMPORTANTe: usar campo privado como acesso (encapsulação) [web:59][web:61]
+            modelBuilder.Entity<Usuario>()
+                .Navigation(nameof(Usuario.Telefones))
+                .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+            modelBuilder.Entity<Usuario>()
+                .Navigation(nameof(Usuario.Enderecos))
+                .UsePropertyAccessMode(PropertyAccessMode.Field);
+
             modelBuilder.Entity<Usuario>().HasIndex(x => x.Cpf).IsUnique();
             modelBuilder.Entity<Usuario>().HasIndex(x => x.Email).IsUnique();
 
             modelBuilder.Entity<Endereco>()
                 .Property(e => e.TipoLogradouro)
                 .HasConversion<string>();
-
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Properties<string>().HaveColumnType("varchar").HaveMaxLength(200);
         }
-        
     }
 }

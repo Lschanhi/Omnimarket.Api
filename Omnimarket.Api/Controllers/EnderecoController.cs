@@ -13,11 +13,7 @@ namespace Omnimarket.Api.Controllers
     public class EnderecosController : ControllerBase
     {
         private readonly DataContext _context;
-
-        public EnderecosController(DataContext context)
-        {
-            _context = context;
-        }
+        public EnderecosController(DataContext context) => _context = context;
 
         [HttpGet]
         public async Task<IActionResult> Listar(int usuarioId)
@@ -68,26 +64,32 @@ namespace Omnimarket.Api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var usuarioExiste = await _context.TBL_USUARIO.AnyAsync(u => u.Id == usuarioId);
-            if (!usuarioExiste) return NotFound(new { mensagem = "Usuário não encontrado." });
+            var usuario = await _context.TBL_USUARIO
+                .Include(u => u.Enderecos)
+                .FirstOrDefaultAsync(u => u.Id == usuarioId);
 
-            var endereco = new Endereco
-            {
-                UsuarioId = usuarioId,
-                Cep = dto.Cep.Trim(),
-                TipoLogradouro = dto.TipoLogradouro,
-                NomeEndereco = dto.NomeEndereco.Trim(),
-                Numero = dto.Numero.Trim(),
-                Complemento = dto.Complemento?.Trim(),
-                Cidade = dto.Cidade.Trim(),
-                Uf = dto.Uf.Trim(),
-                IsPrincipal = dto.IsPrincipal ?? false
-            };
+            if (usuario is null) return NotFound(new { mensagem = "Usuário não encontrado." });
 
-            await _context.TBL_ENDERECO.AddAsync(endereco);
+            var novo = new Endereco(
+                usuarioId: usuarioId,
+                cep: dto.Cep.Trim(),
+                tipoLogradouro: dto.TipoLogradouro,
+                nomeEndereco: dto.NomeEndereco.Trim(),
+                numero: dto.Numero.Trim(),
+                complemento: dto.Complemento?.Trim(),
+                cidade: dto.Cidade.Trim(),
+                uf: dto.Uf.Trim(),
+                isPrincipal: false
+            );
+
+            usuario.AdicionarEndereco(novo, dto.IsPrincipal == true);
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(Obter), new { usuarioId, enderecoId = endereco.Id }, new { endereco.Id });
+            var criado = usuario.Enderecos.OrderByDescending(e => e.Id).First();
+            return CreatedAtAction(nameof(Obter),
+                new { usuarioId, enderecoId = criado.Id },
+                new { criado.Id });
         }
 
         [HttpPut("{enderecoId:int}")]
@@ -95,19 +97,28 @@ namespace Omnimarket.Api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var endereco = await _context.TBL_ENDERECO
-                .FirstOrDefaultAsync(e => e.UsuarioId == usuarioId && e.Id == enderecoId);
+            var usuario = await _context.TBL_USUARIO
+                .Include(u => u.Enderecos)
+                .FirstOrDefaultAsync(u => u.Id == usuarioId);
 
-            if (endereco is null) return NotFound();
+            if (usuario is null) return NotFound();
 
-            endereco.Cep = dto.Cep.Trim();
-            endereco.TipoLogradouro = dto.TipoLogradouro;
-            endereco.NomeEndereco = dto.NomeEndereco.Trim();
-            endereco.Numero = dto.Numero.Trim();
-            endereco.Complemento = dto.Complemento?.Trim();
-            endereco.Cidade = dto.Cidade.Trim();
-            endereco.Uf = dto.Uf.Trim();
-            endereco.IsPrincipal = dto.IsPrincipal ?? endereco.IsPrincipal;
+            try
+            {
+                usuario.AtualizarEndereco(enderecoId,
+                    alterar: e => e.Atualizar(
+                        cep: dto.Cep.Trim(),
+                        tipoLogradouro: dto.TipoLogradouro,
+                        nomeEndereco: dto.NomeEndereco.Trim(),
+                        numero: dto.Numero.Trim(),
+                        complemento: dto.Complemento?.Trim(),
+                        cidade: dto.Cidade.Trim(),
+                        uf: dto.Uf.Trim()
+                    ),
+                    tornarPrincipal: dto.IsPrincipal
+                );
+            }
+            catch (KeyNotFoundException) { return NotFound(); }
 
             await _context.SaveChangesAsync();
             return NoContent();
@@ -116,29 +127,49 @@ namespace Omnimarket.Api.Controllers
         [HttpDelete("{enderecoId:int}")]
         public async Task<IActionResult> Remover(int usuarioId, int enderecoId)
         {
-            var endereco = await _context.TBL_ENDERECO
-                .FirstOrDefaultAsync(e => e.UsuarioId == usuarioId && e.Id == enderecoId);
+            var usuario = await _context.TBL_USUARIO
+                .Include(u => u.Enderecos)
+                .FirstOrDefaultAsync(u => u.Id == usuarioId);
 
-            if (endereco is null) return NotFound();
+            if (usuario is null) return NotFound();
 
-            _context.TBL_ENDERECO.Remove(endereco);
+            try
+            {
+                usuario.RemoverEndereco(enderecoId);
+            }
+            catch (KeyNotFoundException) { return NotFound(); }
+
             await _context.SaveChangesAsync();
+            return NoContent();
+        }
 
+        [HttpPatch("{enderecoId:int}/principal")]
+        public async Task<IActionResult> DefinirPrincipal(int usuarioId, int enderecoId)
+        {
+            var usuario = await _context.TBL_USUARIO
+                .Include(u => u.Enderecos)
+                .FirstOrDefaultAsync(u => u.Id == usuarioId);
+
+            if (usuario is null) return NotFound();
+
+            try
+            {
+                usuario.DefinirEnderecoPrincipal(enderecoId);
+            }
+            catch (KeyNotFoundException) { return NotFound(); }
+
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
         [HttpGet("tipos-logradouro")]
         public IActionResult GetTiposLogradouro()
         {
-             var itens = Enum.GetValues<TiposLogradouroBR>()
-            .Select(v => new
-            {
-                codigo = v.ToString(),
-                descricao = v.GetDisplayName()
-            })
-            .ToList();
+            var itens = Enum.GetValues<TiposLogradouroBR>()
+                .Select(v => new { codigo = v.ToString(), descricao = v.GetDisplayName() })
+                .ToList();
 
-        return Ok(itens);
+            return Ok(itens);
         }
     }
 }
