@@ -7,6 +7,7 @@ using Omnimarket.Api.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Omnimarket.Api.Models.Dtos.Produtos;
+using Omnimarket.Api.Services;
 
 
 namespace Omnimarket.Api.Controllers
@@ -16,6 +17,7 @@ namespace Omnimarket.Api.Controllers
     public class ProdutoController : ControllerBase
     {
         private readonly DataContext _context;
+        //private readonly UsuarioService _usuarioService;
 
         public ProdutoController(DataContext context)
         {
@@ -39,6 +41,9 @@ namespace Omnimarket.Api.Controllers
                     DtCriacao = p.DtCriacao
                 })
                 .ToListAsync();
+
+                //a linha abaixo serve para saber se o user pode ser clasificado como vendedor
+                //bool ehVendedor = await _usuarioService.UsuarioVendedor(usuarioId); //método do service usuario para conferir se tem um produto criado e se está disponivel
 
             return Ok(produtos);
         }
