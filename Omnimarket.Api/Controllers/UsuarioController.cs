@@ -29,6 +29,12 @@ namespace Omnimarket.Api.Controllers
             _context = context;
         }
 
+        /*public UsuarioController(DataContext context, UsuarioService usuarioService)
+        {
+            _context = context;
+            _usuarioService = usuarioService;
+        }*/
+
         private async Task<bool> EmailExistente(string email) =>
             await _context.TBL_USUARIO.AnyAsync(x => x.Email.ToLower() == email.ToLower());
 
