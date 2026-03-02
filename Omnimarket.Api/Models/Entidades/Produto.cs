@@ -8,7 +8,9 @@ namespace Omnimarket.Api.Models.Entidades
 {
     public class Produto
     {
-       public int Id { get; set; }
+        public int Id { get; set; }
+
+        public int UsuarioId { get; set; }  //O produto tem q ter o id de seu usuario(seu vendedor)
 
         [Required, StringLength(50)]
         public string Nome { get; set; } = string.Empty;

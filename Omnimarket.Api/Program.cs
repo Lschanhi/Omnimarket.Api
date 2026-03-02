@@ -33,6 +33,10 @@ builder.Services.AddControllers()
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddScoped<AuthService>();  //para criar uma datacontext para que o meu service do Auth use-a em seu construtor
+
+builder.Services.AddScoped<UsuarioService>();   //para criar uma datacontext para que o meu service do usuario use-a
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
