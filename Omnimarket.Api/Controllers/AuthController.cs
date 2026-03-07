@@ -14,10 +14,12 @@ namespace Omnimarket.Api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
+        private readonly TokenService _tokenService;
 
-        public AuthController(AuthService authService)
+        public AuthController(AuthService authService, TokenService tokenService)
         {
             _authService = authService;
+            _tokenService = tokenService;
         }
 
         //a loginDTO pedirá o email e senha para o user e dps virá para esse método.
@@ -31,6 +33,8 @@ namespace Omnimarket.Api.Controllers
             {
                 return Unauthorized("Email ou senha incorretos!");
             }
+            
+            var token =  _tokenService.GerarToken(usuario.Email, usuario.Id.ToString());
 
             return Ok(new 
             {
@@ -38,7 +42,7 @@ namespace Omnimarket.Api.Controllers
                 nome = usuario.Nome,
                 sobrenome = usuario.Sobrenome,
                 email = usuario.Email,
-                token = usuario.Token
+                token = token
             });
         }
     }

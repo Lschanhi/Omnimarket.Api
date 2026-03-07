@@ -3,7 +3,8 @@ using Omnimarket.Api.Data;
 using System.Text;
 using Omnimarket.Api.Services;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DataContext>(options =>
@@ -11,6 +12,33 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder
         .Configuration.GetConnectionString("ConexaoSomee"));
 });
+
+
+//configuração do jwt para ativar a autenticação do token de login
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = builder.Configuration["Jwt: Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+        )
+    };
+});
+
+builder.Services.AddAuthentication();
+
 /*
 builder.Services.AddHttpClient<ICpfService, CpfService>(client =>
 {
@@ -37,7 +65,12 @@ builder.Services.AddScoped<AuthService>();  //para criar uma datacontext para qu
 
 builder.Services.AddScoped<UsuarioService>();   //para criar uma datacontext para que o meu service do usuario use-a
 
+builder.Services.AddScoped<TokenService>();
+
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
