@@ -67,6 +67,8 @@ builder.Services.AddScoped<UsuarioService>();   //para criar uma datacontext par
 
 builder.Services.AddScoped<TokenService>();
 
+builder.Services.AddScoped<PedidoService>();
+
 var app = builder.Build();
 
 app.UseAuthentication();
