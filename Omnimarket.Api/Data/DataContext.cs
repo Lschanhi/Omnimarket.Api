@@ -19,6 +19,8 @@ namespace Omnimarket.Api.Data
         public DbSet<Telefone> TBL_TELEFONE { get; set; }
         public DbSet<Produto> TBL_PRODUTO { get; set; }
         public DbSet<ProdutoMidia> ProdutoMidia => Set<ProdutoMidia>();
+        public DbSet<Pedido> TBL_PEDIDO { get; set; }
+        public DbSet<ItensPedido> TBL_ITENS_PEDIDO { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +29,8 @@ namespace Omnimarket.Api.Data
             modelBuilder.Entity<Telefone>().ToTable("TBL_TELEFONE");
             modelBuilder.Entity<Produto>().ToTable("TBL_PRODUTOS");
             modelBuilder.Entity<ProdutoMidia>().ToTable("TBL_PRODUTOS_MIDIA");
+            modelBuilder.Entity<Pedido>().ToTable("TBL_PEDIDO");
+            modelBuilder.Entity<ItensPedido>().ToTable("TBL_ITENS_PEDIDO");
 
             modelBuilder.Entity<Usuario>()
                 .HasMany(u => u.Telefones)
