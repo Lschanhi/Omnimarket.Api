@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Omnimarket.Api.Models.Entidades;
+using Omnimarket.Api.Models.Dtos.Pedidos.ItemPedido; 
 
 namespace Omnimarket.Api.Models.Dtos.Pedidos
 {
@@ -12,6 +13,6 @@ namespace Omnimarket.Api.Models.Dtos.Pedidos
         public int TipoEntrgaId { get; set; }
         public string Observacao { get; set; } = string.Empty;
 
-        public List<ItensPedido> Itens { get; set; } = new();
+        public List<ItemPedidoDto> Itens { get; set; } = new();
     }
 }

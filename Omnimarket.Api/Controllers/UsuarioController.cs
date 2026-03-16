@@ -12,7 +12,7 @@ using Omnimarket.Api.Models.Dtos.Usuarios;
 namespace Omnimarket.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class UsuarioController : ControllerBase
     {
         private readonly DataContext _context;

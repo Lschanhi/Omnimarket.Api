@@ -30,11 +30,14 @@ namespace Omnimarket.Api.Services
                 StatusPedidosId = StatusPedido.Pendente
             };
 
+            await _context.TBL_PEDIDO.AddAsync(pedido);  
+            await _context.SaveChangesAsync();  
+
             foreach (var item in dto.Itens)
             {
                 //procura no banco o id informado pelo user para retornar o produto ou null e evitar criar um pedido com produtos inexistntes
                 var produto = await _context.TBL_PRODUTO.FirstOrDefaultAsync(p => p.Id == item.ProdutoId);
-
+  
                 if (produto == null)
                     throw new Exception($"Produto {item.ProdutoId} não encontrado.");
 
