@@ -10,7 +10,7 @@ using Omnimarket.Api.Models.Dtos.Pedidos;
 namespace Omnimarket.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class PedidoController : ControllerBase
     {
         private readonly PedidoService _pedidoService;
@@ -40,7 +40,7 @@ namespace Omnimarket.Api.Controllers
         }
 
         //lista todos os pedidos de um usuario
-        [HttpGet("usuario/{usuarioId}")]
+        [HttpGet("pedidos/{usuarioId}")]
         public async Task<IActionResult> ListarPedidoUsuario(int usuarioId)
         {
             var pedidos = await _pedidoService.ListarPedidosUsuario(usuarioId);

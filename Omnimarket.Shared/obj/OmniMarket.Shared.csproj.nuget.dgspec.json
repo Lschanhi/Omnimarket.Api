@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\OmniMarket.Shared\\OmniMarket.Shared.csproj": {}
+    "D:\\Lucas-Icaro\\PTCC-2\\Omnimarket.Api\\OmniMarket.Shared\\OmniMarket.Shared.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\OmniMarket.Shared\\OmniMarket.Shared.csproj": {
+    "D:\\Lucas-Icaro\\PTCC-2\\Omnimarket.Api\\OmniMarket.Shared\\OmniMarket.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\OmniMarket.Shared\\OmniMarket.Shared.csproj",
+        "projectUniqueName": "D:\\Lucas-Icaro\\PTCC-2\\Omnimarket.Api\\OmniMarket.Shared\\OmniMarket.Shared.csproj",
         "projectName": "OmniMarket.Shared",
-        "projectPath": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\OmniMarket.Shared\\OmniMarket.Shared.csproj",
-        "packagesPath": "C:\\Users\\lscha\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lscha\\Desktop\\ETEC\\2 semestre\\DESENVOLVIMENTO DE SISTEMAS\\Omnimarket\\OmniMarket.Shared\\obj\\",
+        "projectPath": "D:\\Lucas-Icaro\\PTCC-2\\Omnimarket.Api\\OmniMarket.Shared\\OmniMarket.Shared.csproj",
+        "packagesPath": "D:\\NUGET_PACKAGES",
+        "outputPath": "D:\\Lucas-Icaro\\PTCC-2\\Omnimarket.Api\\OmniMarket.Shared\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\lscha\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\etechas\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -45,7 +45,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -66,7 +66,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
